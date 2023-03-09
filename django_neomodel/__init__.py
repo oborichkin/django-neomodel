@@ -159,6 +159,12 @@ class DjangoPropertyField(DjangoBaseField):
     
         super().__init__()
 
+    def db_parameters(self, connection):
+        return {
+            "type": None,
+            "check": None
+        }
+
     def save_form_data(self, instance, data):
         setattr(instance, self.name, data)
 
@@ -310,6 +316,12 @@ class DjangoRelationField(DjangoBaseField):
         self.remote_field = DjangoRemoteField(self.prop._raw_class)
      
         super().__init__()
+
+    def db_parameters(self, connection):
+        return {
+            "type": None,
+            "check": None
+        }
 
     def set_attributes_from_rel(self):
         """ From https://github.com/django/django/blob/1be99e4e0a590d9a008da49e8e3b118b57e14075/django/db/models/fields/related.py#L393 """
