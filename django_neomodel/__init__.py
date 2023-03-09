@@ -357,7 +357,7 @@ class DjangoRelationField(DjangoBaseField):
             raise ValidationError(e)  
         # Cardinality needs to be observed, so use following order:
         # if One: replace
-        # if OneOreMore: first connect, then disconnect
+        # if OneOrMore: first connect, then disconnect
         # if ZeroOrMore: doesn't matter
         # if ZeroOrOne: First disconnect, then connect
      
@@ -381,9 +381,13 @@ class DjangoRelationField(DjangoBaseField):
         
             # Instead of checking the relationship exists, just disconnect 
             self._disconnect_node(should_not_be_connected, instance_relation)
+        elif self.prop.manager is One:
+            # Disconnect only previously connected
+            instance_relation.disconnect_all()
+            self._connect_node(data, instance_relation)
         else:
             # This would require replacing the current relation with a new one
-            raise NotImplementedError('Cardinality of One is not supported yet')
+            raise NotImplementedError(f'Cardinality of {self.prop.manager} is not supported yet')
 
     def _disconnect_node(self, should_not_be_connected, instance_relation):
         """ Given a list pk's, remove the relationship """
