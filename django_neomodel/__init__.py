@@ -248,6 +248,7 @@ class DjangoRemoteField(object):
         self.related_query_name = name
         self.model = name
         self.through = SimpleNamespace(_meta=SimpleNamespace(auto_created=True))
+        self.limit_choices_to = None
     
     def get_related_field(self):
         # Fake call https://github.com/django/django/blob/ac5cc6cf01463d90aa333d5f6f046c311019827b/django/contrib/admin/widgets.py#L282
