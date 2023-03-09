@@ -47,12 +47,14 @@ class NOT_PROVIDED:
     pass
 
 
+# TODO add validator
 class DjangoFormFieldMultipleChoice(form_fields.MultipleChoiceField):
     """ Sublcass of Djangos MultipleChoiceField but without working validator """
     def validate(self, value):
         return True 
 
 
+# TODO add validator
 class DjangoFormFieldTypedChoice(form_fields.TypedChoiceField):
     """ Sublcass of Djangos TypedChoiceField but without working validator """
     def validate(self, value):
@@ -296,7 +298,7 @@ class DjangoRelationField(DjangoBaseField):
         self.verbose_name = name
         self.help_text = getattr(prop, 'help_text', '')
         
-        if prop.manager is ZeroOrOne: 
+        if prop.manager is ZeroOrOne or prop.manager is One:
             # This form_class has its validator set to True
             self.form_class = DjangoFormFieldTypedChoice
         else:
