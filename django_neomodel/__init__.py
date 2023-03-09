@@ -382,12 +382,18 @@ class DjangoRelationField(DjangoBaseField):
             # Instead of checking the relationship exists, just disconnect 
             self._disconnect_node(should_not_be_connected, instance_relation)
         elif self.prop.manager is One:
-            # Disconnect only previously connected
-            instance_relation.disconnect_all()
-            self._connect_node(data, instance_relation)
+            self._reconnect(data, instance_relation)
         else:
             # This would require replacing the current relation with a new one
             raise NotImplementedError(f'Cardinality of {self.prop.manager} is not supported yet')
+
+    def _reconnect(self, data, instance_relation):
+        data = data[0] if isinstance(data, list) else data
+
+        related_model = current_apps.get_model(self.prop.module_name.split('.')[-2],
+            self.prop._raw_class)
+        
+        instance_relation.reconnect(instance_relation.get(), related_model.nodes.get(pk=data))
 
     def _disconnect_node(self, should_not_be_connected, instance_relation):
         """ Given a list pk's, remove the relationship """
