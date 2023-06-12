@@ -14,6 +14,7 @@ from neomodel import RequiredProperty, DeflateError, StructuredNode, UniqueIdPro
 from neomodel.core import NodeMeta
 from neomodel.match import NodeSet
 from neomodel.cardinality import OneOrMore, One, ZeroOrOne, ZeroOrMore
+from neomodel.exceptions import NodeClassAlreadyDefined
 
 from types import SimpleNamespace
 from django.apps import apps as current_apps
@@ -542,7 +543,12 @@ class NeoManager:
 class MetaClass(NodeMeta):
     def __new__(cls, *args, **kwargs):
         super_new = super().__new__
-        new_cls = super_new(cls, *args, **kwargs)
+        try:
+            new_cls = super_new(cls, *args, **kwargs)
+        except NodeClassAlreadyDefined as e:
+            return e.current_node_class_registry[frozenset(
+                e.db_node_rel_class.inherited_labels()
+            )]
         setattr(new_cls, "_default_manager", NeoManager(new_cls))
 
         # Needed to run pytest, after adding app/model register
